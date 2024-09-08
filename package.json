@@ -1,15 +1,17 @@
 {
-  "name": "js-debug",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@mkusaka/debug",
+  "version": "0.0.1",
+  "description": "debug function",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepack": "tsc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "mkusaka <hinoshita1992@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "typescript": "^5.5.4"
-  }
+  },
+  "repository": "https://github.com/mkusaka/js-debug.git"
 }
