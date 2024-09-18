@@ -1,6 +1,6 @@
 {
   "name": "@mkusaka/debug",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "debug function",
   "main": "index.js",
   "scripts": {
