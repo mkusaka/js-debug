@@ -11,6 +11,7 @@
   "author": "mkusaka <hinoshita1992@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^22.5.5",
     "typescript": "^5.5.4"
   },
   "repository": "https://github.com/mkusaka/js-debug.git"
