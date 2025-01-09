@@ -20,7 +20,7 @@ npm install --save @mkusaka/js-debug
 
 ```ts
 // logger.ts
-import { Logger } from "your-logger-package";
+import { Logger } from "@mkusaka/js-debug";
 
 // 1. Create a logger with optional context
 const logger = new Logger({ service: "my-service" });
