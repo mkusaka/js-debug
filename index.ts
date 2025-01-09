@@ -1,4 +1,3 @@
-// logger.ts
 import { format } from "util";
 
 type LogLevel = "debug" | "info" | "warn" | "error";
@@ -12,7 +11,7 @@ interface LogEntry {
   timestamp: string;
   message: string;
   context?: LoggerContext;
-  fileLocation: string; // filepath:lineNumber:colNumber
+  fileLocation: string; // filepath:line:col
 }
 
 export class Logger {
@@ -23,7 +22,8 @@ export class Logger {
   }
 
   /**
-   * 親ロガーの context を継承した新しい Logger を返す
+   * Returns a new Logger that inherits the current context
+   * and merges any additional context.
    */
   public clone(additionalContext: LoggerContext = {}): Logger {
     return new Logger({
@@ -49,12 +49,22 @@ export class Logger {
   }
 
   private log(level: LogLevel, message: any, ...args: any[]) {
-    // 2階層上の呼び出し元情報を取得 (this.log -> debug/info/... -> 呼び出し元)
-    const { filePath, lineNumber, colNumber } = getCallSite(2);
+    // Increase to 3 so the call site points to index.test.ts (the test file),
+    // rather than index.ts (this file).
+    const { filePath, lineNumber, colNumber } = getCallSite(3);
 
-    // クリックなどでコードジャンプしやすい "[filepath]:[line]:[col]" 形式を作成
+    // Create "[filepath]:[line]:[col]" for easier code navigation
     const fileLocation = `${filePath}:${lineNumber}:${colNumber}`;
 
+    // Merge any object arguments into the existing context
+    let mergedContext = { ...this.context };
+    for (const arg of args) {
+      if (typeof arg === "object" && arg !== null && !Array.isArray(arg)) {
+        mergedContext = { ...mergedContext, ...arg };
+      }
+    }
+
+    // Format the message
     const formattedMessage =
       typeof message === "string"
         ? format(message, ...args)
@@ -64,21 +74,19 @@ export class Logger {
       level,
       timestamp: new Date().toISOString(),
       message: formattedMessage,
-      context: this.context,
+      context: mergedContext,
       fileLocation,
     };
 
-    // console.log で構造化ログ（JSON）を出力
     console.log(JSON.stringify(logEntry));
   }
 }
 
 /**
- * 呼び出し元のスタック情報からファイルパス・行番号・カラム番号を取得
- * depth は呼び出し階層を表す (this.log() -> debug()等 -> ユーザーコードなら2)
+ * Retrieves file path, line number, and column number from the call stack.
+ * `depth` represents how many levels up the stack we go.
  */
 function getCallSite(depth: number = 2) {
-  // prepareStackTrace を一時的に上書きし、NodeJS.CallSite[] を取得
   const original = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
   const stack = new Error().stack as unknown as NodeJS.CallSite[];
