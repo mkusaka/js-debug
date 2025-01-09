@@ -49,10 +49,13 @@ describe("Logger", () => {
     expect(parsed.context).toEqual({ service: "my-service", foo: "bar" });
     expect(parsed.timestamp).toBeDefined();
 
-    // Now we expect to see "index.test.ts" in the file path,
-    // because getCallSite(3) points to the test file.
-    expect(parsed.fileLocation).toContain("index.test.ts");
-    expect(parsed.fileLocation).toMatch(/:\d+:\d+$/);
+    // Strict pattern:
+    //   - “index.test.ts”
+    //   - followed by “:lineNumber:colNumber”
+    //   - lineNumber and colNumber >= 1
+    expect(parsed.fileLocation).toMatch(
+      /^.*index\.test\.ts:[1-9]\d*:[1-9]\d*$/,
+    );
   });
 
   it("debug method logs at debug level", () => {
@@ -66,8 +69,9 @@ describe("Logger", () => {
 
     expect(parsed.level).toBe("debug");
     expect(parsed.message).toBe("Debug message");
-    expect(parsed.fileLocation).toContain("index.test.ts");
-    expect(parsed.fileLocation).toMatch(/:\d+:\d+$/);
+    expect(parsed.fileLocation).toMatch(
+      /^.*index\.test\.ts:[1-9]\d*:[1-9]\d*$/,
+    );
   });
 
   it("clone merges additional context", () => {
@@ -87,8 +91,9 @@ describe("Logger", () => {
       requestId: "123abc",
     });
     expect(parsed.message).toBe("Child logger warn");
-    expect(parsed.fileLocation).toContain("index.test.ts");
-    expect(parsed.fileLocation).toMatch(/:\d+:\d+$/);
+    expect(parsed.fileLocation).toMatch(
+      /^.*index\.test\.ts:[1-9]\d*:[1-9]\d*$/,
+    );
   });
 
   it("error method logs an error-level message and merges context", () => {
@@ -103,7 +108,8 @@ describe("Logger", () => {
     expect(parsed.level).toBe("error");
     expect(parsed.message).toContain("Something went wrong");
     expect(parsed.context).toEqual({ code: 500 });
-    expect(parsed.fileLocation).toContain("index.test.ts");
-    expect(parsed.fileLocation).toMatch(/:\d+:\d+$/);
+    expect(parsed.fileLocation).toMatch(
+      /^.*index\.test\.ts:[1-9]\d*:[1-9]\d*$/,
+    );
   });
 });
