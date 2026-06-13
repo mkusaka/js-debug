@@ -17,7 +17,7 @@
   },
   "repository": "https://github.com/mkusaka/js-debug.git",
   "dependencies": {
-    "vitest": "^2.1.8"
+    "vitest": "^3.2.6"
   },
   "packageManager": "pnpm@11.5.2"
 }
